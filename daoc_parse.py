@@ -1,4 +1,5 @@
 import sys, re
+import argparse
 
 total_damage = 0
 
@@ -220,44 +221,57 @@ def parse_all(openFile):
     print("Financial statistics: ")
     parse_allMoney(openFile)
 
-def main() :
-    in_path = 'C:\\Users\\Draqolv\\Documents\\Electronic Arts\\Dark Age of Camelot\\'
-    print(in_path+sys.argv[1])
+
+def main():
+    parser = argparse.ArgumentParser(description="Super awesome DAOC chatlog parser.")
+
+    # Path to chat.log
+    parser.add_argument('-p', nargs=1, action="store", dest="in_path")
+
+    # Commands
+    parser.add_argument('-mc', '--meleeCombat', action="store_true")
+    parser.add_argument('-cc', '--casterCombat', action="store_true")
+    parser.add_argument('-mh', '--Mainhand', nargs=1)
+    parser.add_argument('-c', '--Crit', action="store_true")
+    parser.add_argument('-d', '--Defense', action="store_true")
+    parser.add_argument('-ac', '--allCombat', action="store_true")
+    parser.add_argument('-mo', '--Money', action="store_true")
+    parser.add_argument('-lm', '--lootMoney', action="store_true")
+    parser.add_argument('-am', '--allMoney', action="store_true")
+    parser.add_argument('-a', '--All', action="store_true")
+
+    args = parser.parse_args()
+
     try:
-        if len(sys.argv) > 1 and sys.argv[1] == 'help':
-            print("Available options are: \nmeleeCombat, \ncasterCombat, \nMainhand <weaponName>, " +
-                "\nCrit, \nDefense, \nallCombat, \nMoney, \nlootMoney, \nallMoney, \nAll")
-        elif len(sys.argv) > 2:
-            with open(in_path+sys.argv[1], 'r') as readf:
-                if sys.argv[2] == "meleeCombat":
-                    parse_melee_combat(readf)
-                elif sys.argv[2] == "casterCombat":
-                    parse_caster_combat(readf)
-                elif sys.argv[2] == "Mainhand":
-                    parse_mainhand(readf, sys.argv[3])
-                elif sys.argv[2] == 'Crit':
-                    parse_crit(readf)
-                elif sys.argv[2] == 'Defense':
-                    parse_defense(readf)
-                elif sys.argv[2] == 'allCombat':
-                    parse_allCombat(readf)
-                elif sys.argv[2] == "Money":
-                    parse_money(readf)
-                elif sys.argv[2] == 'lootMoney':
-                    parse_gold_loot(readf)
-                elif sys.argv[2] == 'allMoney':
-                    parse_allMoney(readf)
-                elif sys.argv[2] == 'All':
-                    parse_all(readf)
-                elif sys.argv[2] == 'help':
-                    print ("Available options are: \nmeleeCombat, \ncasterCombat, \nMainhand <weaponName>, " +
-                        "\nCrit, \nDefense, \nallCombat, \nMoney, \nlootMoney, \nallMoney, \nAll")
-        else: # arguments not help and is too short. Probably default to All
-            with open(in_path+sys.argv[1], 'r') as readf:
+        if not args.in_path:
+            in_path = 'C:\\Users\\Draqolv\\Documents\\Electronic Arts\\Dark Age of Camelot\\chat.log'
+        else:
+            in_path = args.in_path[0]
+
+        with open(in_path, 'r') as readf:
+            if args.meleeCombat:
+                parse_melee_combat(readf)
+            if args.casterCombat:
+                parse_caster_combat(readf)
+            if args.Mainhand:
+                parse_mainhand(readf, args.Mainhand[0])
+            if args.Crit:
+                parse_crit(readf)
+            if args.Defense:
+                parse_defense(readf)
+            if args.allCombat:
+                parse_allCombat(readf)
+            if args.Money:
+                parse_money(readf)
+            if args.lootMoney:
+                parse_gold_loot(readf)
+            if args.allMoney:
+                parse_allMoney(readf)
+            if args.All:
                 parse_all(readf)
+
     except IOError:
-        print("Failed to open "+ sys.argv[1])
+        print("Failed to open " + args.in_path)
+
 
 main()
-
-#python daoc_parse.py chat.log <option>
